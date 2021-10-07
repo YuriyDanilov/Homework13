@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script>
+
+        class Circle {
+            constructor(x, y, radius, color) {
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.color = color;
+            }
+
+            drawCircle(ctx) {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            drawHourLines(ctx) {
+                ctx.strokeStyle = '#000';
+                ctx.beginPath();
+                for (let h = 0; h < 12; h++) {
+                    ctx.lineWidth = 6;
+                    ctx.rotate(Math.PI / 6);
+                    ctx.moveTo(200, 0);
+                    ctx.lineTo(180, 0);
+                }
+                ctx.closePath();
+                ctx.stroke();
+            }
+        }
+
+
+        class ClockArrow {
+            constructor(x, y, width, radius, color, angle) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.radius = radius;
+                this.color = color;
+                this.angle = angle;
+            }
+
+            drawClockArrow(ctx) {
+                ctx.strokeStyle = this.color;
+                ctx.beginPath();
+                ctx.lineWidth = this.width;
+                ctx.moveTo(this.x, this.y);
+                ctx.rotate(this.angle);
+                ctx.lineTo(this.x, this.y - this.radius);
+                ctx.closePath();
+                ctx.stroke();
+                ctx.rotate(-this.angle);
+            }
+
+            drawMinSecLines(ctx) {
+                ctx.strokeStyle = this.color;
+                ctx.beginPath();
+                for (let m = 1; m <= 60; m++) {
+                    ctx.lineWidth = 3;
+                    ctx.rotate(Math.PI / 30);
+                    ctx.moveTo(200, 0);
+                    ctx.lineTo(190, 0);
+                }
+                ctx.closePath();
+                ctx.stroke();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            let cvs = document.querySelector('.cvs');
+            let ctx = cvs.getContext('2d');
+
+            cvs.width = 400;
+            cvs.height = 400;
+
+            let x = 0,
+                y = 0,
+                radius = cvs.width / 2,
+                color = '#fff';
+
+            ctx.translate(radius, radius);
+
+            let tickTock = () => {
+                ctx.clearRect(-radius, -radius, cvs.width, cvs.height);
+
+                let bigCircle = new Circle(x, y, radius, color);
+                bigCircle.drawCircle(ctx);
+                bigCircle.drawHourLines(ctx);
+
+                let mediumCircle = new Circle(x, y, radius * 0.05, '#000');
+                mediumCircle.drawCircle(ctx);
+
+                let date = new Date(),
+                    hour = date.getHours(),
+                    minute = date.getMinutes(),
+                    second = date.getSeconds();
+
+                let SecondAngle = second * (Math.PI / 30);
+                let minuteAngle = (minute + second / 60) * (Math.PI / 30);
+                let hourAngle = (hour % 12 + minute / 60 + second / 3600) * (Math.PI / 6);
+
+                let minuteHand = new ClockArrow(x, y, 5, radius * 0.8, '#000', minuteAngle);
+                minuteHand.drawClockArrow(ctx);
+                minuteHand.drawMinSecLines(ctx);
+
+
+                let hourHand = new ClockArrow(x, y, 7, radius * 0.6, '#000', hourAngle);
+                hourHand.drawClockArrow(ctx);
+
+                let secondHand = new ClockArrow(x, y, 2, radius * 0.8, '#ff0000', SecondAngle);
+                secondHand.drawClockArrow(ctx);
+
+                let smallCircle = new Circle(x, y, radius * 0.03, '#ff0000');
+                smallCircle.drawCircle(ctx);
+
+                requestAnimationFrame(tickTock);
+            }
+
+            requestAnimationFrame(tickTock);
+
+        })
+    </script>
+
+    <style>
+        html {
+            height: 100%;
+        }
+
+        body {
+            background-color: #232629;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+    </style>
+
+</head>
+
+<body>
+    <canvas class="cvs">
+        qwerty
+    </canvas>
+</body>
+
+</html>

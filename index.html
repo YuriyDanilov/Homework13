@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script>
+
+        let fruits = {
+            apple: 20,
+            banana: 30,
+            orange: 50,
+        };
+        let colors = ['green', 'yellow', 'orange'];
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            let cvs = document.querySelector('.cvs');
+            let ctx = cvs.getContext('2d');
+
+            cvs.width = 200;
+            cvs.height = 200;
+
+            let x = cvs.width / 2,
+                y = cvs.height / 2,
+                radius = cvs.height / 2,
+                startAngle = 0,
+                finishAngle = 0;
+
+            function drawSector(ctx, x, y, radius, startAngle, finishAngle, color) {
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.arc(x, y, radius, startAngle, finishAngle);
+                ctx.closePath();
+                ctx.fill();
+            };
+
+            function forFinishAngle(object) {
+                let sum = 0;
+                for (let i in object) {
+                    let value = object[i];
+                    sum += value;
+                }
+                return sum;
+            }
+            console.log(forFinishAngle(fruits));
+
+            class PipeChart {
+                constructor(object, color) {
+                    this.object = object;
+                    this.color = color;
+                }
+
+                draw(ctx) {
+                    let colorIndex = 0;
+                    for (let i in this.object) {
+                        let val = this.object[i];
+                        finishAngle = 2 * Math.PI * val / forFinishAngle(this.object);
+                        drawSector(ctx, x, y, radius, startAngle, startAngle + finishAngle,
+                            this.color[colorIndex]);
+                        startAngle += finishAngle;
+                        colorIndex++;
+                    }
+                }
+            }
+
+            let fruitPipeChart = new PipeChart(fruits, colors);
+            fruitPipeChart.draw(ctx);
+
+        })
+
+    </script>
+
+</head>
+
+<body>
+    <canvas class="cvs">
+        qwerty
+    </canvas>
+</body>
+
+</html>
